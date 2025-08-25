@@ -86,6 +86,3 @@ publish/
 *.mdf
 *.ldf
 *.sql
-
-#Text fils 
- *.txt

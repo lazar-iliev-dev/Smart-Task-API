@@ -1,6 +1,15 @@
 version: '3.9'
 
 services:
+
+  smarttaskapi:
+    build: ./SmartTaskAPI
+    container_name: smarttaskapi
+    ports:
+      - "5284:80"
+    depends_on:
+      - postgres
+
   postgres:
     image: postgres:latest
     container_name: smarttaskdb-postgres
@@ -13,6 +22,14 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+
+  ml-service:
+    build: ./ml-microservice
+    container_name: smarttask-ml
+    ports:
+      - "5001:5000"
+    depends_on:
+      - smarttaskapi
 
 volumes:
   postgres_data:
