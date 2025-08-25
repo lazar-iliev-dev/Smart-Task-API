@@ -67,7 +67,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-    
+builder.Services.AddHttpClient<MlSearchService>();
 
 var app = builder.Build();
 
@@ -83,8 +83,7 @@ app.UseSwagger();
 app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
-app.UseAuthorization();
-app.UseAuthentication();  // muss vor Authorization
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
