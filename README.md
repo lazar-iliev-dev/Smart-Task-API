@@ -1,13 +1,14 @@
 
 # Smart-Task-Api
 
-*SmartTaskApi — .NET 9 Web API for task management (CRUD, filters, JWT auth).*
-
+SmartTaskApi — .NET 9 Web API for task management (CRUD, filters, JWT auth).  
+Live demo (Swagger): https://smart-task-api.onrender.com/swagger
 
 ![Build](https://img.shields.io/badge/build-passing-brightgreen)
 ![Docker](https://img.shields.io/badge/docker-ready-blue)
 ![License](https://img.shields.io/badge/license-MIT-yellow)
 
+---
 
 ## 🌍 Kurzbeschreibung / Short description
 
@@ -27,7 +28,7 @@ Authentication uses JWT. Deployment is container-based (Render / Docker).
 
 - ✅ CRUD: Create, Read, Update, Delete tasks  
 - ✅ JWT authentication (login / register)  
-- ✅ Swagger / OpenAPI documentation
+- ✅ Swagger / OpenAPI documentation  
 - ✅ Docker support  
 - 🚧 Filter tasks by status and due date (work in progress)  
 - 🚧 Deployment scripts / CI (work in progress)
