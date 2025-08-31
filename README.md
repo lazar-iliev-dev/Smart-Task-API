@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="de">
-# Smart-Task-Api
 
-SmartTaskApi — .NET 9 Web API for task management (CRUD, filters, JWT auth).  
+<h3> SmartTaskApi — .NET 9 Web API for task management (CRUD, filters, JWT auth).  </h3>
 
 ![Build](https://img.shields.io/badge/build-passing-brightgreen)
 ![Docker](https://img.shields.io/badge/docker-ready-blue)
