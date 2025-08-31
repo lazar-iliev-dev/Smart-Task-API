@@ -2,6 +2,8 @@
 __pycache__/
 *.py[cod]
 *$py.class
+Pipfile.lock
+
 
 # Virtualenvs
 .env/
@@ -81,6 +83,12 @@ nunit-*.xml
 
 # VS Code settings
 .vscode/
+
+# JetBrains Rider
+.idea/
+*.sln.iml
+*.dotSettings.user
+.idea_modules/
 
 # macOS system files
 .DS_Store
