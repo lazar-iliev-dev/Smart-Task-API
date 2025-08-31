@@ -1,14 +1,13 @@
-
+<!DOCTYPE html>
+<html lang="de">
 # Smart-Task-Api
 
 SmartTaskApi — .NET 9 Web API for task management (CRUD, filters, JWT auth).  
-Live demo (Swagger): https://smart-task-api.onrender.com/swagger
 
 ![Build](https://img.shields.io/badge/build-passing-brightgreen)
 ![Docker](https://img.shields.io/badge/docker-ready-blue)
 ![License](https://img.shields.io/badge/license-MIT-yellow)
 
----
 
 ## 🌍 Kurzbeschreibung / Short description
 
@@ -22,7 +21,6 @@ SmartTaskApi is a modern .NET 9 Web API for a task management system.
 The API provides endpoints to create, edit, delete and filter tasks by status and due date.  
 Authentication uses JWT. Deployment is container-based (Render / Docker).
 
----
 
 ## 🚀 Features / Funktionen
 
@@ -33,7 +31,6 @@ Authentication uses JWT. Deployment is container-based (Render / Docker).
 - 🚧 Filter tasks by status and due date (work in progress)  
 - 🚧 Deployment scripts / CI (work in progress)
 
----
 
 ## 📦 Tech Stack
 
@@ -45,41 +42,6 @@ Authentication uses JWT. Deployment is container-based (Render / Docker).
 - Swagger / Swashbuckle  
 - Serilog  
 
----
-
-## 📂 Ordnerstruktur / Project structure
-
-```
-```bash
-SmartTaskApi/
-├── Controllers/
-│   ├── TaskController.cs
-│   └── AuthController.cs
-├── Models/
-│   ├── TaskItem.cs
-│   └── User.cs
-├── DTO/
-│   ├── CreateTaskDto.cs
-│   ├── UserDto.cs
-│   ├── RegisterRequest.cs
-│   └── LoginRequest.cs
-├── Data/
-│   ├── AppDbContext.cs
-│   └── AppDbContextFactory.cs
-├── Services/
-│   └── JwtService.cs
-├── Middlewares/
-│   └── ExceptionMiddleware.cs
-├── Migrations/
-├── docker-compose.yml
-├── Dockerfile
-├── Program.cs
-├── appsettings.json
-└── README.md
-
-````
-
----
 
 ## 🛠️ Voraussetzungen / Requirements
 
@@ -87,7 +49,6 @@ SmartTaskApi/
 - Docker (für containerized development)  
 - Optional: `psql` / PgAdmin / Supabase dashboard  
 
----
 
 ## 🐳 Quick start — lokal mit Docker
 
@@ -95,7 +56,7 @@ SmartTaskApi/
    ```bash
    git clone https://github.com/lazar-iliev-dev/Smart-Task-Api.git
    cd SmartTaskAPI
-````
+```bash
 
 2. Environment konfigurieren:
    Passe `appsettings.Development.json` oder Environment-Variablen an:
@@ -184,8 +145,6 @@ curl -X POST http://localhost:5284/api/auth/login \
 
 👉 Returns: `{ "token": "eyJhbGciOi..." }`
 
----
-
 ### Tasks
 
 | Endpoint          | Method | Auth | Description     |
@@ -233,27 +192,22 @@ curl -X GET http://localhost:5284/api/tasks \
 ]
 ```
 
----
-
 ## 📷 Swagger UI
 
-![Swagger Screenshot](docs/swagger.png)
+![Swagger Screenshot](docs/swagger.png) 🚧
 
----
 
 ## 🧪 Testing
 
-* 🚧 Unit / Integration tests (work in progress)
-* Empfehlung: `xUnit` + `WebApplicationFactory`
+* Unit / Integration tests (work in progress) 🚧
+* Empfehlung: `xUnit` + `WebApplicationFactory` 🚧
 
----
 
 ## 🚢 Deployment
 
-* Render (Docker)
+* Render (Docker) 🚧
 * GitHub Actions CI/CD 🚧
 
----
 
 ## 🤝 Contributing
 
@@ -261,10 +215,10 @@ Contributions welcome.
 Workflow: **Fork → Branch → Pull Request**
 Bitte kurze Beschreibung im PR hinzufügen.
 
----
 
 ## 📜 License & Author
 
-* Lizenz: MIT
-* Author: **Lazar Iliev** — GitHub: [@lazar-iliev-dev](https://github.com/lazar-iliev-dev)
-```
+<footer>
+  <p>Lizenz: MIT | Author: <strong>Lazar Iliev</strong> — GitHub: <a href="https://github.com/lazar-iliev-dev" target="_blank">@lazar-iliev-dev</a></p>
+</footer>
+</html>
