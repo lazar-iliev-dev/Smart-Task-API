@@ -49,64 +49,42 @@ Authentication uses JWT. Deployment is container-based (Render / Docker).
 - Optional: `psql` / PgAdmin / Supabase dashboard  
 
 
-## 🐳 Quick start — lokal mit Docker
+## 🐳 Quick start — Lokales Setup (Docker)
 
 1. Repository klonen:
-   ```bash
-   git clone https://github.com/lazar-iliev-dev/Smart-Task-Api.git
-   cd SmartTaskAPI
-```bash
-
-2. Environment konfigurieren:
-   Passe `appsettings.Development.json` oder Environment-Variablen an:
-
-   * `ConnectionStrings:DefaultConnection`
-   * `Jwt:Key`, `Jwt:Issuer`, `Jwt:Audience`
-
-3. Docker starten:
-
-   ```bash
-   docker-compose up -d
-   ```
-
-4. Migration anwenden:
-
-   ```bash
-   dotnet ef database update --project SmartTaskAPI.csproj
-   ```
-
-5. App öffnen:
-   👉 [http://localhost:5284/swagger](http://localhost:5284/swagger)
-
----
-
-## 💻 Quick start — ohne Docker (lokal)
-
-### Konfiguration
-
-Erstelle/ändere `appsettings.Development.json`:
-
-```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Port=5432;Database=smarttaskdb;Username=postgres;Password=D4Hbfg9dqB"
-  },
-  "Jwt": {
-    "Key": "YOUR_SECRET_KEY_MIN_16_CHARS",
-    "Issuer": "smarttask",
-    "Audience": "smarttask_users"
-  }
-}
-```
-
-### Start
+ ```bash
+ git clone https://github.com/lazar-iliev-dev/Smart-Task-Api.git
+ d SmartTaskAPI
 
 ```bash
-dotnet ef database update --project SmartTaskApi.csproj
-dotnet run --project SmartTaskApi.csproj
+cp .env.example .env
 ```
 
-👉 Swagger: [http://localhost:5284/swagger](http://localhost:5284/swagger)
+2. Postgres starten:
+
+```bash
+docker compose up -d postgres
+```
+
+Migration anwenden (lokale DB erstellen & aktualisieren):
+
+```bash
+export ConnectionStrings__DefaultConnection="Host=localhost;Port=5432;Database=smarttaskdb;Username=postgres;Password=<your pw>;SslMode=Disable"
+dotnet ef database update -p src/Infrastructure/Infrastructure.csproj -s src/Api/Api.csproj
+```
+Alle Services starten (API + ML + DB):
+
+```bash
+docker compose up -d --build
+```
+
+Test der APIs:
+
+Swagger (API): 👉 http://localhost:5284/swagger
+
+ML Service: 👉 http://localhost:5001/api/search?q=test
+
+
 
 ---
 
