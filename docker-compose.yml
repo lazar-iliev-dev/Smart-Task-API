@@ -1,14 +1,21 @@
-version: '3.9'
-
 services:
-
   smarttaskapi:
     build: ./SmartTaskAPI
     container_name: smarttaskapi
     ports:
       - "5284:80"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: Host=postgres;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:80/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
 
   postgres:
     image: postgres:latest
@@ -22,6 +29,11 @@ services:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}"]
+      interval: 10s
+      retries: 5
+      start_period: 20s
 
   ml-service:
     build: ./ml-microservice
@@ -29,7 +41,14 @@ services:
     ports:
       - "5001:5000"
     depends_on:
-      - smarttaskapi
+      smarttaskapi:
+        condition: service_healthy
+    environment:
+      DOTNET_API_URL: http://smarttaskapi:80
 
 volumes:
   postgres_data:
+
+networks:
+  default:
+    name: smarttask-network
