@@ -8,7 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 // Serilog konfigurieren
 Log.Logger = new LoggerConfiguration()
-   // .ReadFrom.Configuration(builder.Configuration) // optional, liest aus appsettings.json
+    //.ReadFrom.Configuration(builder.Configuration) // optional, liest aus appsettings.json
+    //.MinimumLevel.Debug() 
     .Enrich.FromLogContext()
     .WriteTo.Console()
     .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
@@ -18,6 +19,20 @@ builder.Host.UseSerilog();
 
 // Infrastructure Services
 builder.Services.AddInfrastructure(builder.Configuration);
+
+// DEBDUG: Which DB connection is being used?
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+if (!string.IsNullOrWhiteSpace(connectionString))
+{
+    if (connectionString.Contains("supabase.co"))
+        Log.Information("🌐 Using Supabase as database backend.");
+    else
+        Log.Information("🐳 Using local Docker Postgres as database backend.");
+}
+else
+{
+    Log.Warning("⚠️ No database connection string found!");
+}
 
 // JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

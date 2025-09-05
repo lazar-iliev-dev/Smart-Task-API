@@ -20,9 +20,9 @@ namespace Infrastructure.Persistence
         }
 
 
-        public DbSet<TaskItem> TaskItems => Set<TaskItem>();
+          public DbSet<TaskItem> TaskItems { get; set; } = null!;
         
-        public DbSet<User> Users => Set<User>();
+        public DbSet<User> Users { get; set; } = null!;
         
     }
 }
