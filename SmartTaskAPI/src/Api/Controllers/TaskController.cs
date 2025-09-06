@@ -62,33 +62,33 @@ namespace Api.Controllers
 
         // POST api/tasks
         [HttpPost]
-public async Task<ActionResult<TaskItem>> CreateTask(CreateTaskDto dto)
-{
-    var entity = new TaskItem
-    {
-        TaskId = Guid.NewGuid(),
-        Title = dto.Title,
-        Description = dto.Description,
-        DueDate = dto.DueDate,
-        Status = dto.Status,
-        Priority = dto.Priority,
-        CreatedAt = DateTime.UtcNow
-    };
+        public async Task<ActionResult<TaskItem>> CreateTask(CreateTaskDto dto)
+        {
+            var entity = new TaskItem
+            {
+                TaskId = Guid.NewGuid(),
+                Title = dto.Title,
+                Description = dto.Description,
+                DueDate = dto.DueDate,
+                Status = dto.Status,
+                Priority = dto.Priority,
+                CreatedAt = DateTime.UtcNow
+            };
 
-    _context.TaskItems.Add(entity);
+            _context.TaskItems.Add(entity);
 
-    try
-    {
-        await _context.SaveChangesAsync();
-        _logger.LogInformation("Task '{Title}' successfully added.", entity.Title);
-        return CreatedAtAction(nameof(GetTask), new { id = entity.TaskId }, entity);
-    }
-    catch (Exception ex)
-    {
-        _logger.LogError(ex, "Error creating the task '{Title}'", entity.Title);
-        return BadRequest();
-    }
-}
+            try
+            {
+                await _context.SaveChangesAsync();
+                _logger.LogInformation("Task '{Title}' successfully added.", entity.Title);
+                return CreatedAtAction(nameof(GetTask), new { id = entity.TaskId }, entity);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating the task '{Title}'", entity.Title);
+                return BadRequest();
+            }
+        }
 
 
         // PUT api/tasks/5
