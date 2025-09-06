@@ -84,4 +84,11 @@ app.MapControllers();
 // Optional: Root Route
 app.MapGet("/", () => Results.Ok("✅ SmartTaskAPI running. Visit /swagger for API docs."));
 
-app.Run();
+        app.Run();
+
+
+// 👇 For integration tests:
+namespace Api
+{
+    public partial class Program { }
+}

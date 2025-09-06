@@ -11,7 +11,7 @@ public static class InfrastructureExtensions
 {
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
-        // DB-Kontext (Postgres als Beispiel)
+        // DB
         var conn = configuration.GetConnectionString("DefaultConnection");
         services.AddDbContext<AppDbContext>(opts =>
         {
@@ -20,6 +20,8 @@ public static class InfrastructureExtensions
         
         // Infrastruktur-Services
         services.AddScoped<IHealthCheckService, HealthCheckService>();
+         // Repositories
+        services.AddScoped<ITaskRepository, TaskRepository>();
 
 
         return services;
