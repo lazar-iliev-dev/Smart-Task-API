@@ -2,29 +2,27 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
-# Copy solution
-COPY SmartTaskAPI.sln ./
+# Kopieren Sie die Projektdateien für das Wiederherstellen von Abhängigkeiten
+COPY ["SmartTaskAPI.sln", "./"]
+COPY ["src/Api/Api.csproj", "./src/Api/"]
+COPY ["src/Application/Application.csproj", "./src/Application/"]
+COPY ["src/Domain/Domain.csproj", "./src/Domain/"]
+COPY ["src/Infrastructure/Infrastructure.csproj", "./src/Infrastructure/"]
+COPY ["src/Tests/UnitTests/UnitTests.csproj", "./src/Tests/UnitTests/"]
+COPY ["src/Tests/IntegrationTests/IntegrationTests.csproj", "./src/Tests/IntegrationTests/"]
 
-# Copy each project file explicitly (so restore can be cached)
-COPY src/Domain/Domain.csproj src/Domain/
-COPY src/Application/Application.csproj src/Application/
-COPY src/Infrastructure/Infrastructure.csproj src/Infrastructure/
-COPY src/Api/Api.csproj src/Api/
+# Stell sicher, dass die Abhängigkeiten wiederhergestellt werden
+RUN dotnet restore "SmartTaskAPI.sln"
 
-# Restore dependencies
-RUN dotnet restore SmartTaskAPI.sln
-
-# Copy the rest of the code
+# Kopiere alle Dateien
 COPY . .
 
-# Build & publish
-WORKDIR /src/Api
+# Baue das Projekt
+WORKDIR /src/src/Api
 RUN dotnet publish -c Release -o /app/publish
 
 # ---- Runtime Stage ----
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/publish .
-ENV ASPNETCORE_URLS=http://+:80
-EXPOSE 80
 ENTRYPOINT ["dotnet", "Api.dll"]
