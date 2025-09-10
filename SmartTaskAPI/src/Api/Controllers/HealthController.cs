@@ -7,21 +7,18 @@ namespace Api.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class HealthController : ControllerBase
-{
-    private readonly CheckHealthHandler _handler;
+    public class HealthController : ControllerBase{
+    private readonly Application.Interfaces.IHealthCheckService _service;
 
-
-    public HealthController(CheckHealthHandler handler)
+    public HealthController(Application.Interfaces.IHealthCheckService service)
     {
-        _handler = handler;
+        _service = service;
     }
 
-
     [HttpGet]
-    public async Task<IActionResult> Get(CancellationToken cancellationToken)
+    public async Task<IActionResult> Get(CancellationToken ct)
     {
-        var healthy = await _handler.HandleAsync(cancellationToken);
-        return Ok(new { healthy });
+        var result = await _service.IsHealthyAsync(ct);
+        return Ok(result);
     }
 }

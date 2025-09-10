@@ -20,6 +20,13 @@ builder.Host.UseSerilog();
 // Infrastructure Services
 builder.Services.AddInfrastructure(builder.Configuration);
 
+// Konfiguration laden
+builder.Configuration
+    .SetBasePath(Directory.GetCurrentDirectory())
+    .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+    .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
+    .AddEnvironmentVariables();
+
 // DEBDUG: Which DB connection is being used?
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 if (!string.IsNullOrWhiteSpace(connectionString))
@@ -51,11 +58,16 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             )
         };
     });
+// Jwt Key Check 
+var key = builder.Configuration["Jwt:Key"];
+Log.Information("Jwt key present: {present}", !string.IsNullOrEmpty(key));
 
 // Controllers & Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+//new---
+builder.Services.AddInfrastructure(builder.Configuration);
 
 //  Host-Logging wieder aktivieren
 // builder.Logging.ClearProviders();      // entferne default Logger

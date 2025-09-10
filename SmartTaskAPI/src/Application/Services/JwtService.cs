@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Application.DTOs;
 using Application.Interfaces;
 using Domain.Entities;
 using Microsoft.Extensions.Configuration;
@@ -19,7 +20,7 @@ namespace Application.Services
             _logger = logger;
         }
 
-        public string GenerateToken(User user)
+            public string GenerateToken(UserDto user)
         {
             _logger.LogInformation("Generating JWT for user {User}", user.Username);
 
