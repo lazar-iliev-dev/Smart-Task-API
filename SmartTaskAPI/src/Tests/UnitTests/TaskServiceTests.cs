@@ -88,14 +88,17 @@ namespace UnitTests
         public async Task DeleteTaskAsync_ShouldReturnTrue_WhenTaskExists()
         {
             // Arrange
-            var taskId = Guid.NewGuid();
-            _mockRepo.Setup(r => r.DeleteAsync(taskId)).ReturnsAsync(true);
-
+            TaskItem task = new TaskItem { TaskId = Guid.NewGuid(), Title = "DeleteTask" };
+            var taskId = task.TaskId;
+            _mockRepo.Setup(r => r.DeleteAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(task);
+          
             // Act
             var result = await _service.DeleteTaskAsync(taskId);
 
             // Assert
-            Assert.True(result);
+            Assert.NotNull(result);
+            Assert.Equal(taskId, result.TaskId);
             _mockRepo.Verify(r => r.DeleteAsync(taskId), Times.Once);
         }
 
@@ -103,15 +106,17 @@ namespace UnitTests
         public async Task DeleteTaskAsync_ShouldReturnFalse_WhenTaskNotFound()
         {
             // Arrange
-            var taskId = Guid.NewGuid();
-            _mockRepo.Setup(r => r.DeleteAsync(taskId)).ReturnsAsync(false);
+            TaskItem task = new TaskItem { TaskId = Guid.NewGuid(), Title = "DeleteTask" };
+            var taskId = task.TaskId;
+            _mockRepo.Setup(r => r.DeleteAsync(It.IsAny<Guid>()))
+            .ReturnsAsync(task);
 
             // Act
             var result = await _service.DeleteTaskAsync(taskId);
 
             // Assert
-            Assert.False(result);
-            _mockRepo.Verify(r => r.DeleteAsync(taskId), Times.Once);
+           Assert.Null(result);
+           _mockRepo.Verify(r => r.DeleteAsync(taskId), Times.Once);
         }
     }
 }
