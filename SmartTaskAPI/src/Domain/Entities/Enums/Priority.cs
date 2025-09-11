@@ -2,7 +2,7 @@ namespace  Domain.Entities.Enums;
 
     public enum Priority
     {
-        Low,
-        Medium,
-        High,
+        Low = 0,
+        Medium = 1,
+        High = 3,
     }

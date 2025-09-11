@@ -3,22 +3,12 @@ using Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using Serilog;
+using DotNetEnv;
+
+// Load .env in development (optional) - safe: Env.Load() will not throw if file missing
+Env.Load();
 
 var builder = WebApplication.CreateBuilder(args);
-
-// Serilog konfigurieren
-Log.Logger = new LoggerConfiguration()
-    //.ReadFrom.Configuration(builder.Configuration) // optional, liest aus appsettings.json
-    //.MinimumLevel.Debug() 
-    .Enrich.FromLogContext()
-    .WriteTo.Console()
-    .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
-    .CreateLogger();
-
-builder.Host.UseSerilog();
-
-// Infrastructure Services
-builder.Services.AddInfrastructure(builder.Configuration);
 
 // Konfiguration laden
 builder.Configuration
@@ -26,6 +16,62 @@ builder.Configuration
     .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
     .AddJsonFile($"appsettings.{builder.Environment.EnvironmentName}.json", optional: true)
     .AddEnvironmentVariables();
+
+// Serilog konfigurieren
+Log.Logger = new LoggerConfiguration()
+    .Enrich.FromLogContext()
+    .WriteTo.Console()
+    .WriteTo.File("Logs/log-.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
+
+// --- JWT-Key Handling (safe) ---
+string? jwtKeyRaw = builder.Configuration["Jwt:Key"]
+                    ?? Environment.GetEnvironmentVariable("Jwt__Key"); // docker-compose .env style
+
+if (string.IsNullOrWhiteSpace(jwtKeyRaw))
+{
+    throw new InvalidOperationException("JWT Key missing - set Jwt__Key in .env or Jwt:Key in config.");
+}
+
+// Try parse as Base64, else fall back to UTF8 bytes
+byte[] jwtKeyBytes;
+try
+{
+    jwtKeyBytes = Convert.FromBase64String(jwtKeyRaw);
+    Log.Information("JWT key parsed as Base64 (length {len} bytes).", jwtKeyBytes.Length);
+}
+catch (FormatException)
+{
+    jwtKeyBytes = Encoding.UTF8.GetBytes(jwtKeyRaw);
+    Log.Information("JWT key used as UTF8 string (length {len} bytes).", jwtKeyBytes.Length);
+}
+
+// HS256 requires at least 32 bytes (256 bits)
+if (jwtKeyBytes.Length < 32)
+{
+    throw new InvalidOperationException($"JWT key is too short ({jwtKeyBytes.Length} bytes). It must be at least 32 bytes (256 bits).");
+}
+
+// --- Authentication ---
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"],
+            ValidAudience = builder.Configuration["Jwt:Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(jwtKeyBytes)
+        };
+    });
+
+// Infrastructure Services
+builder.Services.AddInfrastructure(builder.Configuration);
 
 // DEBDUG: Which DB connection is being used?
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
@@ -41,38 +87,10 @@ else
     Log.Warning("⚠️ No database connection string found!");
 }
 
-// JWT Authentication
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options =>
-    {
-        options.TokenValidationParameters = new TokenValidationParameters
-        {
-            ValidateIssuer = true,
-            ValidateAudience = true,
-            ValidateLifetime = true,
-            ValidateIssuerSigningKey = true,
-            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-            ValidAudience = builder.Configuration["Jwt:Audience"],
-            IssuerSigningKey = new SymmetricSecurityKey(
-                Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"] ?? throw new InvalidOperationException("JWT Key missing"))
-            )
-        };
-    });
-// Jwt Key Check 
-var key = builder.Configuration["Jwt:Key"];
-Log.Information("Jwt key present: {present}", !string.IsNullOrEmpty(key));
-
 // Controllers & Swagger
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-//new---
-builder.Services.AddInfrastructure(builder.Configuration);
-
-//  Host-Logging wieder aktivieren
-// builder.Logging.ClearProviders();      // entferne default Logger
-// builder.Logging.AddConsole();          // füge Konsolen-Logger wieder hinzu
-// builder.Logging.AddDebug();            // optional Debug-Logger
 
 // App erstellen
 var app = builder.Build();
@@ -98,8 +116,7 @@ app.MapGet("/", () => Results.Ok("✅ SmartTaskAPI running. Visit /swagger for A
 
         app.Run();
 
-
-// 👇 For integration tests:
+// For integration tests:
 namespace Api
 {
     public partial class Program { }

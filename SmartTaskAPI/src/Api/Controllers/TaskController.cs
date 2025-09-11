@@ -1,7 +1,10 @@
 using Application.DTOs;
+using Application.Interfaces;
 using Domain.Entities;
+using Domain.Entities.Enums;
 using Infrastructure.Persistence;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.EntityFrameworkCore;
 
 namespace Api.Controllers
@@ -12,11 +15,13 @@ namespace Api.Controllers
     {
         private readonly AppDbContext _context;
         private readonly ILogger<TaskController> _logger;
+        private readonly ITaskRepository _repo;
 
-        public TaskController(AppDbContext context, ILogger<TaskController> logger)
+        public TaskController(AppDbContext context, ILogger<TaskController> logger, ITaskRepository repo)
         {
             _context = context;
             _logger = logger;
+            _repo = repo;
         }
 
         // GET api/tasks
@@ -91,39 +96,82 @@ public async Task<ActionResult<TaskItem>> CreateTask(CreateTaskDto dto)
 }
 
 
-        // PUT api/tasks/5
-        [HttpPut("{id}")]
-        public async Task<ActionResult> UpdateTask(Guid id, TaskItem task)
+        [HttpPut("{id:guid}")]
+        public async Task<ActionResult> UpdateTask(Guid id, [FromBody] UpdateTaskDto dto)
         {
-            if (id != task.TaskId)
-            {
-                _logger.LogWarning("Mismatch: route ID {TaskId} does not match task ID {TaskItemId}.", id, task.TaskId);
-                return BadRequest();
-            }
+            if (dto == null) return BadRequest("Invalid request body");
 
-            _context.Entry(task).State = EntityState.Modified;
+            var existing = await _repo.GetByIdAsync(id);
+            if (existing == null) return NotFound();
 
-            try
+            // Strings
+            existing.Title = dto.Title ?? existing.Title;
+            existing.Description = dto.Description ?? existing.Description;
+            existing.DueDate = dto.DueDate ?? existing.DueDate;
+
+            // Priority (int -> Enum)
+            if (dto.Priority.HasValue)
             {
-                await _context.SaveChangesAsync();
-                _logger.LogInformation("Task with ID {TaskId} successfully updated.", id);
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!_context.TaskItems.Any(t => t.TaskId == id))
+                if (Enum.IsDefined(typeof(Priority), dto.Priority.Value))
                 {
-                    _logger.LogWarning("Task with ID {TaskId} not found during update.", id);
-                    return NotFound();
+                    existing.Priority = (Priority)dto.Priority.Value;
                 }
-                throw;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error updating task with ID {TaskId}.", id);
-                return StatusCode(500, "Internal server error");
+                else
+                {
+                    return BadRequest($"Invalid Priority value: {dto.Priority}");
+                }
             }
 
+            // Status (int -> Enum)
+            if (dto.Status.HasValue)
+            {
+                if (Enum.IsDefined(typeof(Status), dto.Status.Value))
+                {
+                    existing.Status = (Status)dto.Status.Value;
+                }
+                else
+                {
+                    return BadRequest($"Invalid Status value: {dto.Status}");
+                }
+            }
+
+            await _repo.UpdateAsync(existing);
             return NoContent();
+
+
+
+
+
+
+            // if (id != task.TaskId)
+            // {
+            //     _logger.LogWarning("Mismatch: route ID {TaskId} does not match task ID {TaskItemId}.", id, task.TaskId);
+            //     return BadRequest();
+            // }
+
+            // _context.Entry(task).State = EntityState.Modified;
+
+            // try
+            // {
+            //     await _context.SaveChangesAsync();
+            //     _logger.LogInformation("Task with ID {TaskId} successfully updated.", id);
+            // }
+            // catch (DbUpdateConcurrencyException)
+            // {
+            //     if (!_context.TaskItems.Any(t => t.TaskId == id))
+            //     {
+            //         _logger.LogWarning("Task with ID {TaskId} not found during update.", id);
+            //         return NotFound();
+            //     }
+            //     throw;
+            // }
+            // catch (Exception ex)
+            // {
+            //     _logger.LogError(ex, "Error updating task with ID {TaskId}.", id);
+            //     return StatusCode(500, "Internal server error");
+            // }
+
+            // return NoContent();
         }
 
         // DELETE api/tasks/5
