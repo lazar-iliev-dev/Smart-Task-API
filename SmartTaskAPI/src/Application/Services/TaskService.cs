@@ -15,14 +15,19 @@ namespace Application.Services
             _repository = repository;
         }
 
-        public Task<IEnumerable<TaskItem>> GetAllTasksAsync() => _repository.GetAllAsync();
+        public Task<IEnumerable<TaskItem>> GetAllTasksAsync() 
+        => _repository.GetAllAsync();
 
-        public Task<TaskItem?> GetTaskByIdAsync(Guid id) => _repository.GetByIdAsync(id);
+    public Task<TaskItem?> GetTaskByIdAsync(Guid id) 
+        => _repository.GetByIdAsync(id);
 
-        public Task<TaskItem> CreateTaskAsync(TaskItem task) => _repository.AddAsync(task);
+    public Task<TaskItem> CreateTaskAsync(TaskItem task) 
+        => _repository.AddAsync(task);
 
-        public Task<TaskItem?> UpdateTaskAsync(TaskItem task) => _repository.UpdateAsync(task);
+    public Task<TaskItem?> UpdateTaskAsync(TaskItem task) 
+        => _repository.UpdateAsync(task);
 
-        public Task<bool> DeleteTaskAsync(Guid id) => _repository.DeleteAsync(id);
+    public Task<TaskItem?> DeleteTaskAsync(Guid id) 
+        => _repository.DeleteAsync(id);
     }
 }

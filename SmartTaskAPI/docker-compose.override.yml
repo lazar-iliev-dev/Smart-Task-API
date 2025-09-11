@@ -1,0 +1,7 @@
+version: "3.9"
+
+services:
+  smarttaskapi:
+    environment:
+    # Local development (if you use dotnet run)
+      ConnectionStrings__DefaultConnection: Host=localhost;Port=5432;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}

@@ -1,7 +1,4 @@
 using Domain.Entities;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace Application.Interfaces
 {
@@ -11,6 +8,6 @@ namespace Application.Interfaces
         Task<TaskItem?> GetByIdAsync(Guid id);
         Task<TaskItem> AddAsync(TaskItem task);
         Task<TaskItem?> UpdateAsync(TaskItem task);
-        Task<bool> DeleteAsync(Guid id);
+        Task<TaskItem?> DeleteAsync(Guid id);
     }
 }
