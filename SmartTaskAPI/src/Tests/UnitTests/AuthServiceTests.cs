@@ -36,7 +36,7 @@ namespace Tests.UnitTests
 
             // InMemory DB statt echter Postgres
             var options = new DbContextOptionsBuilder<AppDbContext>()
-                .UseInMemoryDatabase(Guid.NewGuid().ToString()) // jede Testinstanz eigene DB
+                .UseInMemoryDatabase(Guid.NewGuid().ToString()) // Each test instance has its own database
                 .Options;
 
             _context = new AppDbContext(options);
