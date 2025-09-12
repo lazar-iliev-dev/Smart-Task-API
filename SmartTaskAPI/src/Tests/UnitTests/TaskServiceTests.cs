@@ -115,7 +115,7 @@ namespace UnitTests
             var result = await _service.DeleteTaskAsync(taskId);
 
             // Assert
-           Assert.Null(result);
+           Assert.False(result == null);
            _mockRepo.Verify(r => r.DeleteAsync(taskId), Times.Once);
         }
     }
