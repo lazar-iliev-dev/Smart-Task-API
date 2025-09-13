@@ -24,7 +24,7 @@ jobs:
           dotnet-version: '9.0.x'
 
       - name: Set up JWT Key
-        run: echo "Jwt__Key=your-very-secret-test-key" >> $GITHUB_ENV
+        run: echo "Jwt__Key=ci-test-super-secret-key-1234567890-ABCDE12345" >> $GITHUB_ENV
 
       - name: Restore dependencies
         run: dotnet restore
