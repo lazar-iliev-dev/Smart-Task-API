@@ -21,8 +21,8 @@ jobs:
           password: ${{ secrets.GHCR_PAT }}
 
       - name: Set lowercase image name
-        run: echo "IMAGE_NAME=ghcr.io/${GITHUB_REPOSITORY,,}/smarttaskapi:latest" >> $GITHUB_ENV
-
+        run: echo "IMAGE_NAME=ghcr.io/$(echo $GITHUB_REPOSITORY | tr '[:upper:]' '[:lower:]')/smarttaskapi:latest" >> $GITHUB_ENV
+      
       - name: Build image
         run: docker build -t $IMAGE_NAME ./SmartTaskAPI
 
