@@ -1,4 +1,4 @@
-name: Docker Build & Push
+name: Build and Push Docker image
 
 on:
   push:
@@ -6,26 +6,25 @@ on:
       - main
 
 jobs:
-  docker-build:
+  docker:
     runs-on: ubuntu-latest
+
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - name: Checkout
+        uses: actions/checkout@v3
 
       - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@v2
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build API Image
-        run: docker build -t ghcr.io/${{ github.repository }}/smarttaskapi:latest ./SmartTaskAPI
+      - name: Set lowercase image name
+        run: echo "IMAGE_NAME=ghcr.io/${GITHUB_REPOSITORY,,}/smarttaskapi:latest" >> $GITHUB_ENV
 
-      - name: Build ML Image
-        run: docker build -t ghcr.io/${{ github.repository }}/ml-microservice:latest ./ml-microservice
+      - name: Build image
+        run: docker build -t $IMAGE_NAME ./SmartTaskAPI
 
-      - name: Push Images
-        run: |
-          docker push ghcr.io/${{ github.repository }}/smarttaskapi:latest
-          docker push ghcr.io/${{ github.repository }}/ml-microservice:latest
+      - name: Push image
+        run: docker push $IMAGE_NAME
