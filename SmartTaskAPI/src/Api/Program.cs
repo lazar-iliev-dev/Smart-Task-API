@@ -71,7 +71,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     });
 
 // Infrastructure Services
-builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddInfrastructure(builder.Configuration, builder.Environment);
 
 // DEBDUG: Which DB connection is being used?
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
