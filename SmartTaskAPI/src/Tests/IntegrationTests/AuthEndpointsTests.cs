@@ -5,11 +5,11 @@ using Api;
 
 namespace IntegrationTests
 {
-    public class AuthEndpointsTests : IClassFixture<WebApplicationFactory<Program>>
+    public class AuthEndpointsTests : IClassFixture<TestingWebApplicationFactory>
     {
         private readonly HttpClient _client;
 
-        public AuthEndpointsTests(WebApplicationFactory<Program> factory)
+        public AuthEndpointsTests(TestingWebApplicationFactory factory)
         {
             //Create client from test server
             _client = factory.CreateClient();

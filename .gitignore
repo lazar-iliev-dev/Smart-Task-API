@@ -102,9 +102,6 @@ nunit-*.xml
 # EF Core Migrations snapshot files
 *MigrationsSnapshot.cs
 
-# Docker files
-**/docker-compose.override.yml
-
 # Publish folder
 publish/
 

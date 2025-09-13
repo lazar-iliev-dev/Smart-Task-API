@@ -1,0 +1,41 @@
+name: .NET Tests
+
+on:
+  push:
+    branches:
+      - 'dev/**'
+      - main
+  pull_request:
+
+jobs:
+  dotnet-tests:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./SmartTaskAPI
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Set up JWT Key
+        run: echo "Jwt__Key=ci-test-super-secret-key-1234567890-ABCDE12345" >> $GITHUB_ENV
+
+      - name: Restore dependencies
+        run: dotnet restore
+
+      - name: Build solution
+        run: dotnet build --no-restore --configuration Release
+
+      # Test UnitTests project
+      - name: Run Unit Tests
+        run: dotnet test src/Tests/UnitTests/UnitTests.csproj --verbosity normal
+
+      # Test IntegrationTests project
+      - name: Run Integration Tests
+        run: dotnet test src/Tests/IntegrationTests/IntegrationTests.csproj --verbosity normal

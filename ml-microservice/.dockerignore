@@ -1,0 +1,40 @@
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*$py.class
+
+# Virtualenv
+.venv/
+venv/
+ENV/
+env/
+env.bak/
+venv.bak/
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+.eggs/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# IDE settings
+.vscode/
+.idea/
+*.code-workspace
+
+# OS system files
+.DS_Store
+Thumbs.db
+
+# Docker / Compose files (nicht ins Image nötig)
+docker-compose*.yml
+*.env
+
+# Git
+.git/
+.gitignore

@@ -5,11 +5,11 @@ using Microsoft.AspNetCore.Mvc.Testing;
 
 namespace IntegrationTests;
 
-public class TaskEndpointsTests : IClassFixture<WebApplicationFactory<Api.Program>>
+public class TaskEndpointsTests : IClassFixture<TestingWebApplicationFactory>
 {
     private readonly HttpClient _client;
 
-    public TaskEndpointsTests(WebApplicationFactory<Api.Program> factory)
+    public TaskEndpointsTests(TestingWebApplicationFactory factory)
     {
         _client = factory.CreateClient();
     }

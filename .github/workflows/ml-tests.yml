@@ -1,0 +1,36 @@
+name: ML Microservice Tests
+
+on:
+  push:
+    branches:
+      - 'dev/**'
+      - main
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./ml-microservice
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set PYTHONPATH so tests can import app.py
+        run: echo "PYTHONPATH=${{ github.workspace }}/ml-microservice" >> $GITHUB_ENV
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+
+      - name: Run tests with pytest
+        run: pytest -v --maxfail=1 --disable-warnings
