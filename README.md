@@ -169,15 +169,10 @@ curl -X GET http://localhost:5284/api/tasks \
 ]
 ```
 
-## 📷 Swagger UI
-
-![Swagger Screenshot](docs/swagger.png) 🚧
-
-
 ## 🧪 Testing
 
-* Unit / Integration tests (work in progress) 🚧
-* Empfehlung: `xUnit` + `WebApplicationFactory` 🚧
+* Unit / Integration tests (work in progress) 
+* Empfehlung: `xUnit` + `WebApplicationFactory`
 
 
 ## 🚢 Deployment
