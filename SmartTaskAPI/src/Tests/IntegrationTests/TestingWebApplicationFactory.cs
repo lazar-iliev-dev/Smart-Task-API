@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Common;
 using System.Linq;
 using System.Text;
 using Infrastructure.Persistence;
@@ -20,14 +21,17 @@ namespace IntegrationTests
             builder.ConfigureServices(services =>
             {
                 // Remove existing DbContext registration (Postgres)
-                var dbContextDescriptor = services.SingleOrDefault(
-                    d => d.ServiceType == typeof(DbContextOptions<AppDbContext>));
-                if (dbContextDescriptor != null)
-                    services.Remove(dbContextDescriptor);
-
-                var ctxDescriptor = services.SingleOrDefault(d => d.ServiceType == typeof(AppDbContext));
-                if (ctxDescriptor != null)
-                    services.Remove(ctxDescriptor);
+                var dbContextDescriptor = services.Where(
+                    d =>
+                    d.ServiceType == typeof(DbContextOptions<AppDbContext>) ||
+                    d.ServiceType == typeof(DbConnection) ||
+                    d.ServiceType == typeof(IDbContextFactory<AppDbContext>))
+                    .ToList();
+                    
+                foreach (var descriptor in dbContextDescriptor)
+                {
+                    services.Remove(descriptor);
+                }
 
                 // Register InMemory provider
                 services.AddDbContext<AppDbContext>(options =>
