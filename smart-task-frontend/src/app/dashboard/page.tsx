@@ -4,15 +4,31 @@ import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { TaskItem } from "../types/TaskItem";
-
+import { useRouter } from 'next/compat/router'
 export default function DashboardPage() {
+
+  const router = useRouter();
   const { data, isLoading, error } = useTasks();
   const [user, setUser] = useState<{ email: string; avatarUrl?: string } | null>(null);
 
+ // client-side only: check token and load user
   useEffect(() => {
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    if (!token) {
+      if (router && typeof router.push === "function")
+      router.push("/login");
+      return;
+    }
+
     const stored = localStorage.getItem("user");
-    if (stored) setUser(JSON.parse(stored));
-  }, []);
+    if (stored) {
+      try {
+        setUser(JSON.parse(stored));
+      } catch {
+        setUser(null);
+      }
+    }
+  }, [router]);
 
   if (!localStorage.getItem("token")) {
     if (typeof window !== "undefined") {
@@ -30,10 +46,13 @@ export default function DashboardPage() {
         <h1 className="text-2xl font-bold">Dashboard</h1>
         {user && (
           <div className="flex items-center gap-2">
-            <span>{user.email}</span>
+            <span>{user.email ?? "Benutzer"}</span>
             <div className="avatar">
               <div className="w-10 rounded-full">
-                <Image src={user.avatarUrl || "https://i.pravatar.cc/100"} alt="avatar" />
+                <Image
+                 src={user.avatarUrl ?? "https://i.pravatar.cc/100"} 
+                 alt="avatar" 
+                 />
               </div>
             </div>
           </div>
@@ -41,9 +60,9 @@ export default function DashboardPage() {
       </div>
 
       <div className="grid gap-4">
-        {data?.length ? (
-          data.map((task: TaskItem) => (
-            <div key={task.id} className="card bg-base-100 shadow p-4">
+        {data && data.length > 0 ? (
+          data.map((task: TaskItem, idx: number) => (
+            <div key={task.id ?? `task-${idx}`} className="card bg-base-100 shadow p-4">
               <h2 className="text-lg font-semibold">{task.title}</h2>
               <p>{task.description}</p>
               <Link href={`/dashboard/tasks/${task.id}`} className="link mt-2">

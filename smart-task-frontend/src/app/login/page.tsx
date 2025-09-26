@@ -1,56 +1,100 @@
+// src/app/login/page.tsx
 "use client";
+
 import { useState } from "react";
-import { useLogin } from "../lib/hooks/useLogin";
+import { useRouter } from "next/navigation";
+import { apiPost } from "../lib/api";
+
 
 export default function LoginPage() {
-  const { mutate, isPending, error } = useLogin();
-  const [email, setEmail] = useState("");
+  const router = useRouter();
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  function handleSubmit(e: React.FormEvent) {
+  function extractValidationMessage(msg: string): string {
+    // Falls der Server ProblemDetails/ValidationErrors als JSON zurückgibt,
+    // versuche den ersten Fehler sinnvoll zu extrahieren.
+    try {
+      const json = JSON.parse(msg);
+      if (json?.errors && typeof json.errors === "object") {
+        const keys = Object.keys(json.errors);
+        if (keys.length > 0) {
+          const first = json.errors[keys[0]];
+          if (Array.isArray(first) && first.length > 0) return String(first[0]);
+        }
+      }
+      if (json?.message) return String(json.message);
+    } catch {
+      // no-op
+    }
+    return msg;
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
-    mutate({ email, password });
+    setError(null);
+
+    if (!username.trim() || !password) {
+      setError("Benutzername und Passwort sind erforderlich.");
+      return;
+    }
+
+    const payload = { username: username.trim(), password };
+    console.log("[Login] payload:", payload); // ---> prüfe das in DevTools Network/Console
+
+    setLoading(true);
+    try {
+      const res = await apiPost<{ token: string }>("/auth/login", payload);
+      // Erfolg: Token in localStorage (oder benutze deinen authStore)
+      localStorage.setItem("token", res.token);
+      router.push("/dashboard");
+    } catch (err: unknown) {
+      // err.message kann JSON-ProblemDetails oder plain text sein
+      const raw = (err instanceof Error ? err.message : String(err)) ?? "Login fehlgeschlagen";
+      const msg = extractValidationMessage(raw);
+      setError(msg);
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-base-200">
-      <div className="card w-full max-w-sm shadow-2xl bg-base-100">
+      <div className="card w-full max-w-md shadow-2xl bg-base-100">
         <div className="card-body">
           <h2 className="card-title text-center">Login</h2>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="form-control">
-              <label className="label">
-                <span className="label-text">Email</span>
-              </label>
+              <label className="label"><span className="label-text">Benutzername (oder E-Mail)</span></label>
               <input
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
+                type="text"
                 className="input input-bordered"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="username oder email"
                 required
               />
             </div>
 
             <div className="form-control">
-              <label className="label">
-                <span className="label-text">Password</span>
-              </label>
+              <label className="label"><span className="label-text">Passwort</span></label>
               <input
                 type="password"
-                placeholder="Password"
+                className="input input-bordered"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="input input-bordered"
+                placeholder="Dein Passwort"
                 required
               />
             </div>
 
-            {error && <p className="text-error text-sm">{error.message}</p>}
+            {error && <div className="text-sm text-error">{error}</div>}
 
-            <div className="form-control mt-6">
-              <button type="submit" className="btn btn-primary" disabled={isPending}>
-                {isPending ? "Loading..." : "Login"}
+            <div className="form-control mt-4">
+              <button className="btn btn-primary" type="submit" disabled={loading}>
+                {loading ? "Anmelden..." : "Anmelden"}
               </button>
             </div>
           </form>
