@@ -7,6 +7,32 @@
 ![Docker](https://img.shields.io/badge/docker-ready-blue)
 ![License](https://img.shields.io/badge/license-MIT-yellow)
 
+---
+# ⚠️ PROJECT MIGRATED
+
+> **This repository has been consolidated into the [Enterprise Operations Platform](https://github.com/lazar-iliev-dev/Enterprise-Operations-Platform) – a modern microservices architecture using .NET Aspire.**
+> 
+> **What changed:**
+> - Upgraded to .NET 9 with Aspire orchestration
+> - Integrated with Knowledge Management Service
+> - Added OpenTelemetry observability
+> - Migrated to cloud-native deployment (Docker + PostgreSQL)
+>
+> 👉 **For the latest version, visit the [new repository](https://github.com/lazar-iliev-dev/Enterprise-Operations-Platform)**
+
+---
+
+## 📜 Legacy Documentation (Archived)
+
+*The content below represents the standalone version of this project before migration.*
+
+---
+
+<h3>SmartTaskApi — .NET 9 Web API for task management (CRUD, filters, JWT auth)</h3>
+
+![Build](https://img.shields.io/badge/build-archived-inactive)
+![Docker](https://img.shields.io/badge/docker-ready-blue)
+![License](https://img.shields.io/badge/license-MIT-yellow)
 
 ## 🌍 Kurzbeschreibung / Short description
 
@@ -19,7 +45,6 @@ Authentifizierung erfolgt via JWT. Deployment erfolgt containerbasiert (Render /
 SmartTaskApi is a modern .NET 9 Web API for a task management system.  
 The API provides endpoints to create, edit, delete and filter tasks by status and due date.  
 Authentication uses JWT. Deployment is container-based (Render / Docker).
-
 
 ## 🚀 Features / Funktionen
 
